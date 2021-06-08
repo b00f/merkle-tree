@@ -36,4 +36,12 @@ func TestMerkleTree(t *testing.T) {
 
 	expected, _ := hex.DecodeString("e6061997a9011668bcf216020aaad9cc7f5f34d5b6f78f1e63ef6257c1aa1f37")
 	assert.Equal(t, tree.Root(), expected)
+
+	tree.SetBlockData(2, []byte("d"))
+	expected, _ = hex.DecodeString("7d50695bac1cfbb69049466c99427e04dc5abe1fb5627ea7c711ff1be7499364")
+	assert.Equal(t, tree.Root(), expected)
+
+	tree.SetBlockData(3, []byte("e"))
+	expected, _ = hex.DecodeString("475076fe263874222d8e1084e85fbfa88d53d6cef7a0d7334f471e7591bfce2f")
+	assert.Equal(t, tree.Root(), expected)
 }
