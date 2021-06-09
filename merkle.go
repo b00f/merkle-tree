@@ -1,6 +1,8 @@
 package merkletree
 
-import "math"
+import (
+	"math"
+)
 
 type Hasher func([]byte) []byte
 
@@ -22,6 +24,8 @@ type node struct {
 // +-+---+
 // |h| w |
 // +-+---+
+// h: height
+// w: width
 //
 func nodeID(height, width int) int {
 	return ((height & 0xff) << 24) | (width & 0xffffff)
@@ -60,27 +64,35 @@ func (t *Tree) invalidateNode(height, width int) {
 	n.hash = nil
 }
 
+func (t *Tree) recalculateHeight(maxWidth int) {
+	if maxWidth > t.maxWidth {
+		t.maxWidth = maxWidth
+
+		maxHeight := math.Log2(float64(maxWidth))
+		if math.Remainder(maxHeight, 1.0) != 0 {
+			t.maxHeight = int(math.Trunc(maxHeight)) + 2
+		} else {
+			t.maxHeight = int(math.Trunc(maxHeight)) + 1
+		}
+	}
+}
+
 func (t *Tree) SetBlockData(no int, data []byte) {
+	t.recalculateHeight(no + 1)
+
 	h := t.hasher(data)
 	node := t.getOrCreateNode(0, no)
 	node.hash = h
 
-	if no+1 > t.maxWidth {
-		maxHeight := math.Log2(float64(no + 2))
-
-		t.maxWidth = no + 1
-		t.maxHeight = int(math.Trunc(maxHeight))
-	}
-
 	w := no / 2
-	for h := 1; h < t.maxHeight+1; h++ {
+	for h := 1; h < t.maxHeight; h++ {
 		t.invalidateNode(h, w)
 		w = w / 2
 	}
 }
 
 func (t *Tree) Root() []byte {
-	return t.nodeHash(t.maxHeight, 0)
+	return t.nodeHash(t.maxHeight-1, 0)
 }
 
 func (t *Tree) nodeHash(height, width int) []byte {
