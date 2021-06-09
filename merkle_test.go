@@ -88,4 +88,11 @@ func TestMerkleTree(t *testing.T) {
 		expected, _ := hex.DecodeString(root[i])
 		assert.Equal(t, tree.Root(), expected, "Root %d not matched", i)
 	}
+
+	// Modifying some data blocks
+	tree.SetBlockData(0, []byte("a"))
+	tree.SetBlockData(21, []byte("v"))
+	expected, _ := hex.DecodeString("5d179ab8afb696b57f433d820406530dae4952a02ba04317c97c86cdff207795")
+	assert.Equal(t, tree.Root(), expected)
+
 }
