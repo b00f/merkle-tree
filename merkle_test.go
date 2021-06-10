@@ -15,12 +15,12 @@ func HashSha256(data []byte) []byte {
 
 func TestNodeID(t *testing.T) {
 	assert.Equal(t, nodeID(0, 0), 0x00000000)
-	assert.Equal(t, nodeID(1, 0), 0x01000000)
-	assert.Equal(t, nodeID(0, 1), 0x00000001)
+	assert.Equal(t, nodeID(0, 1), 0x01000000)
+	assert.Equal(t, nodeID(1, 0), 0x00000001)
 	assert.Equal(t, nodeID(1, 1), 0x01000001)
-	assert.Equal(t, nodeID(0xff, 0xffffff), 0xffffffff)
-	assert.Equal(t, nodeID(0x00, 0xffffff), 0x00ffffff)
-	assert.Equal(t, nodeID(0x77, 0xff00ff), 0x77ff00ff)
+	assert.Equal(t, nodeID(0xffffff, 0xff), 0xffffffff)
+	assert.Equal(t, nodeID(0xffffff, 0x00), 0x00ffffff)
+	assert.Equal(t, nodeID(0xff00ff, 0x77), 0x77ff00ff)
 }
 
 func TestCalculateHeight(t *testing.T) {
